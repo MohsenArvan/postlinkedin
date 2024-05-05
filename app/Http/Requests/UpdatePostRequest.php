@@ -9,9 +9,9 @@ class UpdatePostRequest extends FormRequest
     /**
      * Determine if the user is authorized to make this request.
      */
-    public function authorize(): bool
+    public function authorize()
     {
-        return false;
+        return auth()->user();
     }
 
     /**
@@ -22,7 +22,10 @@ class UpdatePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'string|max:255',
+            'description' => 'string|max:500',
+            'image_url' => 'string',
+            'tags' => 'array',
         ];
     }
 }
