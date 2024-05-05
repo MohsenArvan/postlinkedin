@@ -6,7 +6,6 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
-use App\Models\Tag;
 
 class PostController extends Controller
 {
@@ -45,19 +44,15 @@ class PostController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(UpdatePostRequest $request, Post $post)
     {
-        //
+        // dd($request->all());
+        $post->update($request->all());
+        $post->tags()->sync($request->tags);
+        $post->load('tags');
+        return new PostResource($post);
     }
 
     /**
@@ -65,6 +60,19 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+        $post->tags()->detach();
+        return response()->json(['message' => 'Post deleted successfully']);
+    }
+
+    public function getPostTag($tag_id){
+        $tag = Post::whereHas('tags', function($query) use ($tag_id){
+            $query->where('id', $tag_id);
+        })
+        ->with('tags')
+        ->get();
+
+        return PostResource::collection($tag);
+
     }
 }
