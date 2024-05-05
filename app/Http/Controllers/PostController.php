@@ -6,6 +6,7 @@ use App\Models\Post;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Http\Resources\PostResource;
+use App\Models\Tag;
 
 class PostController extends Controller
 {
@@ -16,21 +17,22 @@ class PostController extends Controller
     {
         return PostResource::collection(Post::all());
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      */
     public function store(StorePostRequest $request)
     {
-        $post = auth()->user()->posts()->create($request->validated());
+        // dd($request->all());
+        $post = auth()->user()->posts()->create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image_url' => $request->image_url,
+            
+        ]);
+
+        $post->tags()->attach($request->tags);
+
+        $post->load('tags');
         return new PostResource($post);
     }
 
