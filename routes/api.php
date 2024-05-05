@@ -9,15 +9,10 @@ Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-// Route::get('/posts', [PostController::class, 'index']);
-// Route::post('/posts', [PostController::class, 'store'])->middleware('auth:sanctum');
-// Route::get('/posts/{post}', [PostController::class, 'show']);
-
 Route::middleware('auth:sanctum')->group(function () {
-    // Route::apiResource('posts', PostController::class);
-    Route::post('/posts', [PostController::class, 'store']);
+    Route::apiResource('posts', PostController::class);
     Route::post('/tags', [TagController::class, 'store']);
+    Route::get('/posts/tag/{tag_id}', [PostController::class , 'getPostTag']);
 });
 
 require __DIR__.'/auth.php';
